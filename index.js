@@ -1,60 +1,82 @@
-let mealsdb = (some) => {
-    let daynamic = `https://www.themealdb.com/api/json/v1/1/search.php?s=${some}`
-    console.log(daynamic);
-    fetch(daynamic)
-        .then(res => res.json())
-        .then(del => onpageshow(del.meals))
+const loadPhone = async (search,dataLimit) => {
+    const url = (`https://openapi.programming-hero.com/api/phones?search=${search}`);
+    const res = await fetch(url);
+    const data = await res.json();
+    displayPhone(data.data,dataLimit);
 }
 
-let onpageshow = (show) => {
-    // console.log(show)
-    let container = document.getElementById('container');
-    container.innerHTML = '';
+// after load phone then console function start here.
 
-    show.forEach((onshow) => {
-
-        console.log(onshow)
-        let mealDiv = document.createElement('div');
-        mealDiv.classList.add('col');
-        mealDiv.innerHTML = `
-        <div class="card h-100">
-                    <img src="${onshow.strMealThumb}" class="card-img-top" alt="...">
-                    <div class="card-body">
-                      <h5 class="card-title">${onshow.strMeal}</h5>
-                      <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                    </div>
-                    <button onclick="imran(${onshow.idMeal})" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#imran">
-                   details in here
-                  </button
-                  </div>
-                  
-        
-        `
-        container.appendChild(mealDiv)
+const displayPhone = (phone,dataLimit) => {
+    // console.log(phone);
+    const phoneContainer = document.getElementById("phone-container");
+    phoneContainer.innerText="";
+    // condition for not found phone massages.
+    let noPhoneFound = document.getElementById('no-phone-found');
+    if(dataLimit && phone.length==0){
+        noPhoneFound.classList.remove('d-none')
+    }else{
+        noPhoneFound.classList.add('d-none')
+    }
+    // how many phone in display slice and show all button in here
+    let showall = document.getElementById('show-all')
+     if(phone.length>10){
+        phone = phone.slice(0,3);
+        showall.classList.remove('d-none')
+     }else{
+        showall.classList.add("d-none")
+     }
+     
+    phone.forEach(phones => {
+        // console.log(element)
+        const phoneDiv = document.createElement('div');
+        phoneDiv.classList.add('col');
+        phoneDiv.innerHTML = `
+        <div class="card p-2" >
+                <img src="${phones.image}" class="card-img-top" alt="...">
+                <div class="card-body">
+                <h5 class="card-title">${phones.phone_name}</h5>
+                <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                </div>
+        </div>
+        `;
+        phoneContainer.appendChild(phoneDiv);
     })
+    loadder(false);
 }
-// mealsdb('fish')
+// after load phone then console function end here.
+// common function processing search 
 
-searchMeal = () => {
-    let search = document.getElementById('search').value;
-    console.log(search)
-    mealsdb(search)
-}
-let imran = (imran)=>{
-    // console.log(imran)
-    let i = `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${imran}`
-    fetch(i)
-    .then(res=>res.json())
-    .then(del=>cons(del.meals[0]))
+const processing = (dataLimit)=>{
+    loadder(true);
+    const inputSearch = document.getElementById('search-input').value;
+    loadPhone(inputSearch,dataLimit);
 }
 
-let cons = (del)=>{
-    console.log(del);
-    document.getElementById('exampleModalLabel').innerText=del.strMeal;
-    let im = document.getElementById('im');
-    im.innerHTML=`
-    <img class="img-fluid" src="${del.strMealThumb}">
-    
-    `
-
+// btn click event start here and loadPhone call in here.
+document.getElementById('btn').addEventListener('click',function(){
+    // loader call in here
+   processing(10);
+})
+// spinner function start in here
+const loadder = isloading=>{
+    let spinner = document.getElementById('spinner');
+    if(isloading){
+        spinner.classList.remove('d-none')
+    }else{
+        spinner.classList.add('d-none')
+    }
 }
+// spinner function end in here
+
+// this the not best solution but it's works now 
+// btn-show-all click event function in here
+document.getElementById('show-all-btn').addEventListener('click',function(){
+    processing()
+   
+})
+
+
+
+
+// loadPhone();
